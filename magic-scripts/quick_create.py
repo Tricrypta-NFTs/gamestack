@@ -22,3 +22,9 @@ while (response == "y"):
     username = input("Enter Username: ")
     createUser(username)
     response = input("Add additional user? Enter y or n: ")
+
+response = input("Enter project name: ")
+
+subprocess.run(["bash", "./game-studio/p4d-files/create-stream.sh", response])
+    
+#subprocess.run(["p4", "typemap", "-i", ">", "./game-studio/p4d-files/typemap.p4s"])
