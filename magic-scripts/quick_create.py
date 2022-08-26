@@ -3,7 +3,7 @@ import json
 
 from manage_p4d import *
     
-#subprocess.run(["bash", "./init-cdk.sh"])
+subprocess.run(["bash", "./game-studio/init-cdk.sh"])
 
 cdk_outputs_file = open("./game-studio/p4d-files/cdk-outputs.json")
 data = json.load(cdk_outputs_file)
