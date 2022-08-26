@@ -1,6 +1,0 @@
-{
-  "GameStudioStack": {
-    "InstanceID": "i-0568dc34761ffc125",
-    "LoadBalancer": "GameS-LB8A1-IHDT0T7N8V5N-7b0242755010a657.elb.us-east-1.amazonaws.com"
-  }
-}
