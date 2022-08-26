@@ -9,11 +9,11 @@ def configure_p4v():
     os.system("p4 trust -y")
     
 def delete_depot(depot_name):
-    os.system("p4 depot -d " + depot)
+    os.system("p4 depot -d " + depot_name)
 
 def create_user(user_name):
-    os.system("p4 user -f " + username)
-    os.system("p4 passwd " + username)
+    os.system("p4 user -f " + user_name)
+    os.system("p4 passwd " + user_name)
 
 def create_stream(stream_name):
     os.system("p4 depot -t stream " + stream_name)
