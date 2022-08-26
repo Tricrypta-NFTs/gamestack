@@ -3,7 +3,7 @@ import json
 
 from manage_p4d import *
 
-subprocess.run(["bash", "./game-studio/p4d-files/install-p4d.sh"])
+subprocess.run(["sudo", "bash", "./game-studio/p4d-files/install-p4d.sh"])
 
 subprocess.run(["bash", "./game-studio/init-cdk.sh"])
 
@@ -17,6 +17,12 @@ cdk_outputs_file.close()
 
 configureP4V("super", p4d_server_address, p4d_instance_id)
 
+username = input("Enter a username: ")
+renameUser("super", username)
+print("Default Password: " + p4d_instance_id)
+changePassword(username)
+
+configureP4V("super", p4d_server_address, p4d_instance_id)
 deleteDepot("depot")
 
 response = input("Add additional user? Enter y or n: ")
@@ -26,7 +32,10 @@ while (response == "y"):
     response = input("Add additional user? Enter y or n: ")
 
 response = input("Enter project name: ")
-
-subprocess.run(["bash", "./game-studio/p4d-files/create-stream.sh", response])
+subprocess.run(["bash", "./game-studio/p4d-files/create-stream.sh", response, username])
     
-#subprocess.run(["p4", "typemap", "-i", ">", "./game-studio/p4d-files/typemap.p4s"])
+subprocess.run(["p4", "typemap", "-i", ">", "./game-studio/p4d-files/typemap.p4s"])
+
+print("Congrats on setting up your own game studio!\n")
+print("Server: " + p4d_server_address)
+print("Username: " + username)
