@@ -86,3 +86,5 @@ p4 set P4CLIENT=super_$1_main
 p4 add .p4ignore
 p4 submit -d "add .p4ignore for ue5"
 cd .. && p4 client -d super_$1_main && rm -r P4_Workspaces
+
+p4 typemap -i > ./p4d-files/typemap.p4s
