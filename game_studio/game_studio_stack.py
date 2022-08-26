@@ -4,6 +4,7 @@ from aws_cdk import (
     aws_autoscaling as autoscaling,
     aws_iam as iam,
     aws_elasticloadbalancingv2 as elbv2,
+    aws_elasticloadbalancingv2_targets as elbv2_targets,
     CfnOutput,
     
 )
@@ -40,10 +41,9 @@ class GameStudioStack(Stack):
         machine_image = ec2.GenericLinuxImage({
             "us-east-1": "ami-0e09d7c1e4eb188b0"
         })
-
-        helix_core = autoscaling.AutoScalingGroup(
-            self,
-            "HelixCore",
+        
+        p4d_instance = ec2.Instance(
+            self, "P4DInstance",
             vpc=vpc,
             instance_type=ec2.InstanceType.of(
                 ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.LARGE
@@ -52,16 +52,17 @@ class GameStudioStack(Stack):
             user_data=user_data,
             security_group=sg,
             block_devices=[
-                autoscaling.BlockDevice(
+                ec2.BlockDevice(
                     device_name="/dev/sdb",
-                    volume=autoscaling.BlockDeviceVolume.ebs(24)
+                    volume=ec2.BlockDeviceVolume.ebs(24)
                 ),
-                autoscaling.BlockDevice(
+                ec2.BlockDevice(
                     device_name="/dev/sdc",
-                    volume=autoscaling.BlockDeviceVolume.ebs(24)
+                    volume=ec2.BlockDeviceVolume.ebs(24)
                     )
             ]
         )
+        instance_target = elbv2_targets.InstanceTarget(p4d_instance, 1666)
 
         # Instance Role and SSM Managed Policy
         role = iam.Role(self, "CDKInstanceSSM", assumed_by=iam.ServicePrincipal("ec2.amazonaws.com"))
@@ -86,9 +87,11 @@ class GameStudioStack(Stack):
         listener.add_targets(
             "Ec2TargetGroup",
             port=1666,
-            targets=[helix_core],
+            targets=[instance_target],
             health_check=health_check,
             protocol=elbv2.Protocol.TCP
         )
 
         CfnOutput(self, "LoadBalancer", export_name="LoadBalancer", value=lb.load_balancer_dns_name)
+        CfnOutput(self, "InstanceID", export_name="InstanceID", value=p4d_instance.instance_id)
+
