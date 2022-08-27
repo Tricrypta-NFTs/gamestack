@@ -40,7 +40,10 @@ class GameStudioStack(Stack):
         )
         
         machine_image = ec2.GenericLinuxImage({
-            "us-east-1": "ami-0e09d7c1e4eb188b0"
+            "us-east-1": "ami-0e09d7c1e4eb188b0",
+            "us-east-2": "ami-07b3240efb4d0fdc9",
+            "us-west-1": "ami-0650ca268c0db8b36",
+            "us-west-2": "ami-08480a22ed805bcb0",
         })
         
         p4d_instance = ec2.Instance(
