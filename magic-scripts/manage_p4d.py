@@ -3,10 +3,18 @@ import subprocess
 import time
 
 def configureP4V(p4_user, p4_port, p4_passwd):
-    subprocess.run(["p4", "set", "P4USER=" + p4_user])
-    subprocess.run(["p4", "set", "P4PORT=" + p4_port])
-    subprocess.run(["p4", "trust", "-y"])
-    subprocess.run(["p4", "login"], input=p4_passwd.encode())
+    is_not_healthy = True
+    while(is_not_healthy):
+        is_not_healthy = False
+        try:
+            subprocess.run(["p4", "set", "P4USER=" + p4_user])
+            subprocess.run(["p4", "set", "P4PORT=" + p4_port])
+            subprocess.run(["p4", "trust", "-y"])
+            subprocess.run(["p4", "login"], input=p4_passwd.encode())
+        except:
+            is_not_healthy = True
+        
+
 
 def deleteDepot(depot_name):
     subprocess.run(["p4", "depot", "-d", depot_name])

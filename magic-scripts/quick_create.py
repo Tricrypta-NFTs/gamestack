@@ -1,6 +1,7 @@
 import subprocess
 import json
 import re
+import time
 
 from manage_p4d import *
 
@@ -28,24 +29,29 @@ project_name = input("Enter a Project Name (a-z or A-Z or 0-9): ")
 formatted_project_name = re.sub(r'[^a-zA-Z0-9]', '', project_name)
 print("Project name set: " + formatted_project_name)
 
-
 subprocess.run(["sudo", "bash", "./game-studio/p4d-files/install-p4d.sh"])
     
 subprocess.run(["cp", "./game-studio/p4d-files/configure-p4d.template", "./game-studio/p4d-files/configure-p4d.sh"])
 subprocess.run(["sed", "-i", "s/$P4USER/" + users[0] + "/g", "./game-studio/p4d-files/configure-p4d.sh"])
 subprocess.run(["bash", "./game-studio/init-cdk.sh"])
+
+timer = 90
+while(timer > 0):
+    print("Instance processing health checks: " + str(timer) + " seconds remaining", end="\r")
+    timer -= 1
+    time.sleep(1)
+
 subprocess.run(["mkdir", "-p", "./game-studio/p4d-generated-files/"])
 
 cdk_outputs_file = open("./game-studio/p4d-generated-files/cdk-outputs.json")
 data = json.load(cdk_outputs_file)
-
 p4d_instance_id = data[formatted_team + "-GameStudioStack"]["InstanceID"]
 p4d_server_address = "ssl:" + data[formatted_team + "-GameStudioStack"]["LoadBalancer"] + ":1666"
-    
 cdk_outputs_file.close()
 
 configureP4V(users[0], p4d_server_address, p4d_instance_id)
-print("Default Password: " + p4d_instance_id)
+print("Please set a password for " + users[0])
+print("Old Password: " + p4d_instance_id)
 changePassword(users[0])
 
 deleteDepot("depot")
@@ -54,6 +60,7 @@ for user in users:
     if (user == users[0]):
         continue
     else:
+        print("Please set a password for " + users[0])
         createUser(user)
 
 
