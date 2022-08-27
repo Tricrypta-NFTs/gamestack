@@ -12,7 +12,13 @@ def deleteDepot(depot_name):
     subprocess.run(["p4", "depot", "-d", depot_name])
 
 def createUser(username):
-    subprocess.run(["p4", "user", "-f", username])
+    protect = subprocess.run(["p4", "user", "-o", "-f", username], capture_output=True)
+    file = open("./game-studio/p4d-generated-files/user.p4s", "w")
+    file.write(protect.stdout.decode("utf-8"))
+    file.close()
+    file = open("./game-studio/p4d-generated-files/user.p4s", "r")
+    subprocess.run(["p4", "user", "-i", "-f"], input=file.read().encode("utf-8"))
+    file.close()
     password_not_set = True
     while(password_not_set):
         password_not_set = False
