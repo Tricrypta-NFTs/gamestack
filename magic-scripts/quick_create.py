@@ -5,6 +5,8 @@ from datetime import datetime
 
 from manage_p4d import *
 
+subprocess.run(["mkdir", "-p", "./game-studio/p4d-generated-files/"])
+
 subprocess.run(["sudo", "bash", "./game-studio/p4d-files/install-p4d.sh"])
 
 team = input("Enter a Team Name (a-z or A-Z or 0-9 or -): ")
@@ -31,10 +33,9 @@ p4d_server_address = "ssl:" + data[formatted_team + "-GameStudioStack"]["LoadBal
     
 cdk_outputs_file.close()
 
-passwd = input("Enter super user password: ")
-configureP4V(super_user, p4d_server_address, passwd)
-#configureP4V(super_user, p4d_server_address, p4d_instance_id)
-#changePassword(super_user)
+configureP4V(super_user, p4d_server_address, p4d_instance_id)
+print("Default Password: " + p4d_instance_id)
+changePassword(super_user)
 
 deleteDepot("depot")
 
@@ -53,15 +54,20 @@ file = open("./game-studio/p4d-files/typemap.p4s", "r")
 subprocess.run(["p4", "typemap", "-i"], input=file.read().encode("utf-8"))
 file.close()
 
+project_name = input("Enter a Project Name (a-z or A-Z or 0-9): ")
+formatted_project_name = re.sub(r'[^a-zA-Z0-9]', '', project_name)
+print("Project name set: " + formatted_project_name)
+subprocess.run(["bash", "./game-studio/p4d-files/create-stream.sh", formatted_project_name, super_user])
+
 if users:
     # Update Protections
     protect = subprocess.run(["p4", "protect", "-o"], capture_output=True)
-    file = open("./game-studio/p4d-files/protect.p4s", "w")
+    file = open("./game-studio/p4d-generated-files/protect.p4s", "w")
     file.write(protect.stdout.decode("utf-8"))
-    protections = "\n\tadmin group Developers * //...\n"
+    protections = "\n\tadmin group Developers * //" + formatted_project_name + "/...\n"
     file.write(protections)
     file.close()
-    file = open("./game-studio/p4d-files/protect.p4s", "r")
+    file = open("./game-studio/p4d-generated-files/protect.p4s", "r")
     subprocess.run(["p4", "protect", "-i"], input=file.read().encode("utf-8"))
     file.close()
     
@@ -74,19 +80,13 @@ if users:
     file_data = file_data.replace("Owners:",  "Owners: \t" + super_user)
     file_data = file_data.replace("Users:",  users_str)
     file.close()
-    file = open("./game-studio/p4d-files/Developers.p4s", "w")
+    file = open("./game-studio/p4d-generated-files/Developers.p4s", "w")
     file.write(file_data)
     file.close()
-    file = open("./game-studio/p4d-files/Developers.p4s", "r")
+    file = open("./game-studio/p4d-generated-files/Developers.p4s", "r")
     subprocess.run(["p4", "group", "-i"], input=file.read().encode("utf-8"))
     print(file_data)
     file.close()
-
-project_name = input("Enter a Project Name (a-z or A-Z or 0-9): ")
-formatted_project_name = re.sub(r'[^a-zA-Z0-9]', '', project_name)
-print("Project name set: " + formatted_project_name)
-subprocess.run(["bash", "./game-studio/p4d-files/create-stream.sh", formatted_project_name, super_user])
-    
 
 print("Congrats on setting up your own game studio!\n")
 print("Server: " + p4d_server_address)
