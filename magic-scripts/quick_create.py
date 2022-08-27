@@ -65,13 +65,23 @@ for user in users:
 
 
 # Update Typemap   
-file = open("./game-studio/p4d-files/typemap.p4s", "r")
+file = open("./game-studio/p4d-files/typemap.template", "r")
+file_data = file.read()
+file.close()
+file = open("./game-studio/p4d-generated-files/typemap.p4s", "w")
+file_data = file_data.replace("depot",  formatted_project_name)
+file.write(file_data)
+file.close()
+file = open("./game-studio/p4d-generated-files/typemap.p4s", "r")
 subprocess.run(["p4", "typemap", "-i"], input=file.read().encode("utf-8"))
 file.close()
 
+# Create Stream
 subprocess.run(["bash", "./game-studio/p4d-files/create-stream.sh", formatted_project_name, users[0]])
 
+# Check for additional users
 if (len(users) > 1):
+    
     # Update Protections
     protect = subprocess.run(["p4", "protect", "-o"], capture_output=True)
     file = open("./game-studio/p4d-generated-files/protect.p4s", "w")
@@ -83,7 +93,7 @@ if (len(users) > 1):
     subprocess.run(["p4", "protect", "-i"], input=file.read().encode("utf-8"))
     file.close()
     
-    # Update Groups
+    # Create Developers Group
     formatted_users = "Users: " 
     for user in users:
             formatted_users += "\n\t\t" + user
@@ -101,5 +111,5 @@ if (len(users) > 1):
     file.close()
 
 print("\n\n\nCongrats on setting up your own game studio!\n")
-print("Server: " + p4d_server_address)
-print("Username: " + users[0])
+print("\tServer: " + p4d_server_address)
+print("\tUsername: " + users[0])
