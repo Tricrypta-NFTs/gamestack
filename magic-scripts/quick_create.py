@@ -35,9 +35,9 @@ subprocess.run(["cp", "./game-studio/p4d-files/configure-p4d.template", "./game-
 subprocess.run(["sed", "-i", "s/$P4USER/" + users[0] + "/g", "./game-studio/p4d-files/configure-p4d.sh"])
 subprocess.run(["bash", "./game-studio/init-cdk.sh"])
 
-timer = 90
+timer = 180
 while(timer > 0):
-    print("Instance processing health checks: " + str(timer) + " seconds remaining", end="\r")
+    print("Instance processing health checks: " + str(timer) + " seconds remaining...", end="\r")
     timer -= 1
     time.sleep(1)
 

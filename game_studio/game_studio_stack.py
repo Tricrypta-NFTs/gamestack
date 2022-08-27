@@ -18,8 +18,9 @@ class GameStudioStack(Stack):
         vpc = ec2.Vpc(
             self, "VPC",
             max_azs=1,
+            nat_gateways=0
         )
-
+        
         data = open("./p4d-files/configure-p4d.sh", "rb").read()
         user_data = ec2.UserData.for_linux()
         user_data.add_commands(str(data, 'utf-8'))
