@@ -1,0 +1,22 @@
+Group:	Developers
+
+Description:
+
+MaxResults:	unset
+
+MaxScanRows:	unset
+
+MaxLockTime:	unset
+
+MaxOpenFiles:	unset
+
+Timeout:	43200
+
+PasswordTimeout:	unset
+
+Subgroups:
+
+Owners:
+
+Users:
+
