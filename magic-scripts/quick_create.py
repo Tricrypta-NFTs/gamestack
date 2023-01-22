@@ -8,8 +8,8 @@ from manage_p4d import *
 team = input("Enter a Team Name (a-z or A-Z or 0-9 or -): ")
 formatted_team = re.sub(r'[^a-zA-Z0-9-]', '', team)
 print("Team name set: " + formatted_team)
-subprocess.run(["cp", "./game-studio/app.template", "./game-studio/app.py"])
-subprocess.run(["sed", "-i", "s/$TEAM/" + formatted_team + "/g", "./game-studio/app.py"])
+subprocess.run(["cp", "./gamestack/app.template", "./gamestack/app.py"])
+subprocess.run(["sed", "-i", "s/$TEAM/" + formatted_team + "/g", "./gamestack/app.py"])
 
 users = []
 users.append('johanv')
@@ -22,13 +22,13 @@ project_name = input("Enter a Project Name (a-z or A-Z or 0-9): ")
 formatted_project_name = re.sub(r'[^a-zA-Z0-9]', '', project_name)
 print("Project name set: " + formatted_project_name)
 print("24 - Starting install-p4d.sh");
-subprocess.run(["sudo", "bash", "./game-studio/p4d-files/install-p4d.sh"])
+subprocess.run(["sudo", "bash", "./gamestack/p4d-files/install-p4d.sh"])
 print("26 - cp");    
-subprocess.run(["cp", "./game-studio/p4d-files/configure-p4d.template", "./game-studio/p4d-files/configure-p4d.sh"])
+subprocess.run(["cp", "./gamestack/p4d-files/configure-p4d.template", "./gamestack/p4d-files/configure-p4d.sh"])
 print("28 - sed")
-subprocess.run(["sed", "-i", "s/$P4USER/" + users[0] + "/g", "./game-studio/p4d-files/configure-p4d.sh"])
+subprocess.run(["sed", "-i", "s/$P4USER/" + users[0] + "/g", "./gamestack/p4d-files/configure-p4d.sh"])
 print("30 - bash init-cdk")
-subprocess.run(["bash", "./game-studio/init-cdk.sh"])
+subprocess.run(["bash", "./gamestack/init-cdk.sh"])
 
 timer = 300
 while(timer > 0):
@@ -37,10 +37,10 @@ while(timer > 0):
     time.sleep(1)
 
 print("39 - bash init-cdk")
-subprocess.run(["mkdir", "-p", "./game-studio/p4d-generated-files/"])
+subprocess.run(["mkdir", "-p", "./gamestack/p4d-generated-files/"])
 
 print("42 - cdk-outputs")
-cdk_outputs_file = open("./game-studio/p4d-generated-files/cdk-outputs.json")
+cdk_outputs_file = open("./gamestack/p4d-generated-files/cdk-outputs.json")
 print("44 - json_load")
 data = json.load(cdk_outputs_file)
 p4d_instance_id = data[formatted_team + "-GameStudioStack"]["InstanceID"]
@@ -65,31 +65,31 @@ for user in users:
 
 
 # Update Typemap   
-file = open("./game-studio/p4d-files/typemap.template", "r")
+file = open("./gamestack/p4d-files/typemap.template", "r")
 file_data = file.read()
 file.close()
-file = open("./game-studio/p4d-generated-files/typemap.p4s", "w")
+file = open("./gamestack/p4d-generated-files/typemap.p4s", "w")
 file_data = file_data.replace("depot",  formatted_project_name)
 file.write(file_data)
 file.close()
-file = open("./game-studio/p4d-generated-files/typemap.p4s", "r")
+file = open("./gamestack/p4d-generated-files/typemap.p4s", "r")
 subprocess.run(["p4", "typemap", "-i"], input=file.read().encode("utf-8"))
 file.close()
 
 # Create Stream
-subprocess.run(["bash", "./game-studio/p4d-files/create-stream.sh", formatted_project_name, users[0]])
+subprocess.run(["bash", "./gamestack/p4d-files/create-stream.sh", formatted_project_name, users[0]])
 
 # Check for additional users
 if (len(users) > 1):
     
     # Update Protections
     protect = subprocess.run(["p4", "protect", "-o"], capture_output=True)
-    file = open("./game-studio/p4d-generated-files/protect.p4s", "w")
+    file = open("./gamestack/p4d-generated-files/protect.p4s", "w")
     file.write(protect.stdout.decode("utf-8"))
     protections = "\n\tadmin group Developers * //" + formatted_project_name + "/...\n"
     file.write(protections)
     file.close()
-    file = open("./game-studio/p4d-generated-files/protect.p4s", "r")
+    file = open("./gamestack/p4d-generated-files/protect.p4s", "r")
     subprocess.run(["p4", "protect", "-i"], input=file.read().encode("utf-8"))
     file.close()
     
@@ -97,15 +97,15 @@ if (len(users) > 1):
     formatted_users = "Users: " 
     for user in users:
             formatted_users += "\n\t\t" + user
-    file = open("./game-studio/p4d-files/Developers.template", "r")
+    file = open("./gamestack/p4d-files/Developers.template", "r")
     file_data = file.read()
     file_data = file_data.replace("Owners:",  "Owners: \t" + users[0])
     file_data = file_data.replace("Users:",  formatted_users)
     file.close()
-    file = open("./game-studio/p4d-generated-files/Developers.p4s", "w")
+    file = open("./gamestack/p4d-generated-files/Developers.p4s", "w")
     file.write(file_data)
     file.close()
-    file = open("./game-studio/p4d-generated-files/Developers.p4s", "r")
+    file = open("./gamestack/p4d-generated-files/Developers.p4s", "r")
     subprocess.run(["p4", "group", "-i"], input=file.read().encode("utf-8"))
     print(file_data)
     file.close()
