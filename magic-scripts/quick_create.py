@@ -12,48 +12,48 @@ subprocess.run(["cp", "./game-studio/app.template", "./game-studio/app.py"])
 subprocess.run(["sed", "-i", "s/$TEAM/" + formatted_team + "/g", "./game-studio/app.py"])
 
 users = []
-user = input("Enter a Username (a-z or A-Z or 0-9 or _.-): ")
-formatted_user = re.sub(r'[^a-zA-Z0-9_.-]', '', user)
-print("Username set: " + formatted_user)
-users.append(formatted_user)
-
-response = input("Add additional unser? Enter y or n: ")
-while (response == "y"):
-    user = input("Enter a Username (a-z or A-Z or 0-9 or _.-): ")
-    formatted_user = re.sub(r'[^a-zA-Z0-9_.-]', '', user)
-    print("Username set: " + formatted_user)
-    users.append(formatted_user)
-    response = input("Add additional user? Enter y or n: ")
+users.append('johanv')
+users.append('antonin')
+users.append('dev_01')
+users.append('dev_02')
+users.append('dev_03')
     
 project_name = input("Enter a Project Name (a-z or A-Z or 0-9): ")
 formatted_project_name = re.sub(r'[^a-zA-Z0-9]', '', project_name)
 print("Project name set: " + formatted_project_name)
-
+print("24 - Starting install-p4d.sh");
 subprocess.run(["sudo", "bash", "./game-studio/p4d-files/install-p4d.sh"])
-    
+print("26 - cp");    
 subprocess.run(["cp", "./game-studio/p4d-files/configure-p4d.template", "./game-studio/p4d-files/configure-p4d.sh"])
+print("28 - sed")
 subprocess.run(["sed", "-i", "s/$P4USER/" + users[0] + "/g", "./game-studio/p4d-files/configure-p4d.sh"])
+print("30 - bash init-cdk")
 subprocess.run(["bash", "./game-studio/init-cdk.sh"])
 
-timer = 180
+timer = 300
 while(timer > 0):
     print("Instance processing health checks: " + str(timer) + " seconds remaining...", end="\r")
     timer -= 1
     time.sleep(1)
 
+print("39 - bash init-cdk")
 subprocess.run(["mkdir", "-p", "./game-studio/p4d-generated-files/"])
 
+print("42 - cdk-outputs")
 cdk_outputs_file = open("./game-studio/p4d-generated-files/cdk-outputs.json")
+print("44 - json_load")
 data = json.load(cdk_outputs_file)
 p4d_instance_id = data[formatted_team + "-GameStudioStack"]["InstanceID"]
 p4d_server_address = "ssl:" + data[formatted_team + "-GameStudioStack"]["LoadBalancer"] + ":1666"
 cdk_outputs_file.close()
 
+print("50 - configurep4v")
 configureP4V(users[0], p4d_server_address, p4d_instance_id)
 print("Please set a password for " + users[0])
 print("Old Password: " + p4d_instance_id)
 changePassword(users[0])
 
+print("56 - delete depot")
 deleteDepot("depot")
 
 for user in users:
