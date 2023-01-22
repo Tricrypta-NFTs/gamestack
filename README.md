@@ -8,7 +8,7 @@ Create an environment name it `dev-env` and leave configurations on their defaul
 Run the following command on your Cloud9 dev environment terminal and follow the prompts
 
 ```
-git clone https://github.com/Tricrypta-NFTs/gamestack.git && python3 ./game-studio/magic-scripts/quick_create.py
+git clone https://github.com/Tricrypta-NFTs/gamestack.git && python3 ./gamestack/magic-scripts/quick_create.py
 ```
 
 Enjoy!

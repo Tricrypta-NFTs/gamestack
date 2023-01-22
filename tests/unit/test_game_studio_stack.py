@@ -7,7 +7,7 @@ from game_studio.game_studio_stack import GameStudioStack
 # resource in game_studio/game_studio_stack.py
 def test_sqs_queue_created():
     app = core.App()
-    stack = GameStudioStack(app, "game-studio")
+    stack = GameStudioStack(app, "gamestack")
     template = assertions.Template.from_stack(stack)
 
 #     template.has_resource_properties("AWS::SQS::Queue", {

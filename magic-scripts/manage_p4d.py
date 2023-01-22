@@ -21,10 +21,10 @@ def deleteDepot(depot_name):
 
 def createUser(username):
     protect = subprocess.run(["p4", "user", "-o", "-f", username], capture_output=True)
-    file = open("./game-studio/p4d-generated-files/user.p4s", "w")
+    file = open("./gamestack/p4d-generated-files/user.p4s", "w")
     file.write(protect.stdout.decode("utf-8"))
     file.close()
-    file = open("./game-studio/p4d-generated-files/user.p4s", "r")
+    file = open("./gamestack/p4d-generated-files/user.p4s", "r")
     subprocess.run(["p4", "user", "-i", "-f"], input=file.read().encode("utf-8"))
     file.close()
     password_not_set = True
